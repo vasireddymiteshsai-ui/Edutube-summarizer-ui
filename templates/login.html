@@ -1,0 +1,224 @@
+<!--
+  login.html — Authentication UI (Login & Signup)
+  =================================================
+  Uses a single template with a `mode` variable to toggle between
+  login and signup forms. Clean, centered Bootstrap card design.
+
+  Jinja2 variable: {{ mode }} = 'login' or 'signup'
+-->
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ 'Sign Up' if mode == 'signup' else 'Log In' }} — EduTube Summarizer
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 440px;
+        padding: 40px;
+    }
+
+    .brand-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 20px;
+        box-shadow: 0 8px 30px rgba(108, 99, 255, 0.3);
+    }
+
+    .auth-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+        color: var(--text-muted);
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 0.9rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1rem;
+        pointer-events: none;
+    }
+
+    .form-control-custom.with-icon {
+        padding-left: 42px;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 24px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .auth-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .auth-footer a:hover {
+        color: #8b83ff;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 24px 0;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+    }
+
+    .divider::before, .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border-color);
+    }
+
+    .divider span {
+        padding: 0 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card glass-card animate-in">
+
+        <!-- Brand Icon -->
+        <div class="brand-icon">
+            <i class="bi bi-book-half"></i>
+        </div>
+
+        <!-- Title -->
+        <h1 class="auth-title">
+            {% if mode == 'signup' %}
+                Create Account
+            {% else %}
+                Welcome Back
+            {% endif %}
+        </h1>
+        <p class="auth-subtitle">
+            {% if mode == 'signup' %}
+                Join EduTube Summarizer to start generating smart notes
+            {% else %}
+                Log in to access your smart notes workspace
+            {% endif %}
+        </p>
+
+        <!-- Auth Form -->
+        <form method="POST" action="{{ url_for('signup') if mode == 'signup' else url_for('login') }}" id="authForm">
+
+            <!-- Username -->
+            <div class="form-group animate-in animate-delay-1">
+                <label class="form-label" for="username">Username</label>
+                <div style="position: relative;">
+                    <i class="bi bi-person input-icon"></i>
+                    <input type="text"
+                           class="form-control form-control-custom with-icon"
+                           id="username"
+                           name="username"
+                           placeholder="Enter your username"
+                           required
+                           autocomplete="username">
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group animate-in animate-delay-2">
+                <label class="form-label" for="password">Password</label>
+                <div style="position: relative;">
+                    <i class="bi bi-lock input-icon"></i>
+                    <input type="password"
+                           class="form-control form-control-custom with-icon"
+                           id="password"
+                           name="password"
+                           placeholder="Enter your password"
+                           required
+                           autocomplete="{{ 'new-password' if mode == 'signup' else 'current-password' }}">
+                </div>
+            </div>
+
+            <!-- Confirm Password (signup only) -->
+            {% if mode == 'signup' %}
+            <div class="form-group animate-in animate-delay-3">
+                <label class="form-label" for="confirm_password">Confirm Password</label>
+                <div style="position: relative;">
+                    <i class="bi bi-shield-lock input-icon"></i>
+                    <input type="password"
+                           class="form-control form-control-custom with-icon"
+                           id="confirm_password"
+                           name="confirm_password"
+                           placeholder="Re-enter your password"
+                           required
+                           autocomplete="new-password">
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary-custom w-100 mt-2" id="submitBtn" style="padding: 12px;">
+                <i class="bi {{ 'bi-person-plus' if mode == 'signup' else 'bi-box-arrow-in-right' }} me-2"></i>
+                {{ 'Create Account' if mode == 'signup' else 'Log In' }}
+            </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="divider"><span>or</span></div>
+
+        <!-- Toggle between Login / Signup -->
+        <div class="auth-footer">
+            {% if mode == 'signup' %}
+                Already have an account?
+                <a href="{{ url_for('login') }}">Log in</a>
+            {% else %}
+                Don't have an account?
+                <a href="{{ url_for('signup') }}">Sign up</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
